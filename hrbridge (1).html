@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071115">
+<title>HR Bridge | HR software for Indian SMEs</title>
+<meta name="description" content="Attendance, leave, payroll (PF, ESIC, TDS) and an employee portal in one place. From ₹499/month. Try free for 30 days.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="HR Bridge: HR software for Indian SMEs, from ₹499/month">
+<meta property="og:description" content="Attendance, leave, payroll and an employee portal in one place. Try free for 30 days, no credit card.">
+<meta property="og:image" content="https://i.ytimg.com/vi/WGNrTD7qXsY/hqdefault.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #071115;
+  --panel: #0c1a20;
+  --bubble: #10242b;
+  --line: #1e3a44;
+  --field: #0a171c;
+  --teal: #35d9c6;
+  --red: #ff6b6b;
+  --text: #e9f3f2;
+  --muted: #8aa5a9;
+  --display: 'Bebas Neue', 'Oswald', 'Arial Narrow', Impact, sans-serif;
+  --body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: #030a0d;
+  color: var(--text);
+  font: 400 16px/1.45 var(--body);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+#app {
+  position: relative;
+  max-width: 460px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background-color: var(--ink);
+  background-image: radial-gradient(rgba(53, 217, 198, .055) 1px, transparent 1px);
+  background-size: 22px 22px;
+  border-inline: 1px solid #0f232a;
+}
+
+/* Chat header */
+.bar {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, #35d9c6, #1a8f96);
+  color: #04191c;
+  font: 400 23px/1 var(--display);
+  letter-spacing: .5px;
+}
+.who { line-height: 1.25; }
+.who b { display: flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 600; }
+.who svg { width: 15px; height: 15px; flex: none; }
+.who span { font-size: 12.5px; color: var(--muted); }
+
+/* Chat */
+#chat {
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 6px;
+  padding: 16px 12px 110px;
+}
+.msg {
+  position: relative;
+  max-width: 90%;
+  padding: 10px 12px 24px;
+  background: var(--bubble);
+  border: 1px solid var(--line);
+  border-radius: 4px 14px 14px 14px;
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+.msg[hidden] { display: none; }
+.msg.in { animation: pop .2s ease-out; }
+@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.msg p { margin: 0; }
+.msg p + p { margin-top: 8px; }
+.msg b { font-weight: 700; color: #fff; }
+.pain b { color: var(--red); }
+.t { position: absolute; right: 10px; bottom: 5px; font-size: 11px; color: var(--muted); }
+
+.typing {
+  display: flex; gap: 5px;
+  padding: 13px 14px;
+  background: var(--bubble);
+  border: 1px solid var(--line);
+  border-radius: 4px 14px 14px 14px;
+}
+.typing[hidden] { display: none; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: blink 1s infinite; }
+.typing i:nth-child(2) { animation-delay: .15s; }
+.typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes blink { 0%, 60%, 100% { opacity: .3; } 30% { opacity: 1; } }
+
+/* The one loud moment: the offer */
+.hero { width: min(94%, 400px); max-width: none; padding-bottom: 28px; }
+.hero h1 { margin: 0 0 10px; font: 400 40px/.98 var(--display); letter-spacing: .3px; color: #fff; }
+.hero h1 span { display: block; color: var(--muted); }
+.price { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.price strong { font: 400 66px/.9 var(--display); color: var(--teal); }
+.price .rs { margin-right: 2px; font: 800 .6em/1 var(--body); }
+.price small { font-size: 13px; line-height: 1.4; color: var(--muted); }
+
+/* Video */
+.video { width: min(90%, 420px); max-width: none; padding: 6px 6px 24px; }
+.poster, .player {
+  position: relative; display: block; width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0; border: 0; border-radius: 10px; overflow: hidden;
+  background: #000; cursor: pointer;
+}
+.poster img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: .85; }
+.play { position: absolute; inset: 0; margin: auto; width: 58px; height: 58px; border-radius: 50%; background: var(--teal); }
+.play::after {
+  content: ''; position: absolute; left: 23px; top: 17px;
+  border-left: 18px solid #04191c; border-top: 12px solid transparent; border-bottom: 12px solid transparent;
+}
+.video p { margin: 8px 6px 0; font-size: 14px; color: var(--muted); }
+
+/* Form */
+.form { width: min(94%, 400px); max-width: none; padding-bottom: 28px; }
+label { display: block; margin: 12px 0 5px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.req { color: var(--red); }
+input, select {
+  width: 100%; padding: 12px;
+  background: var(--field); color: var(--text);
+  border: 1px solid var(--line); border-radius: 10px;
+  font: 500 16px var(--body);
+  -webkit-appearance: none; appearance: none;
+}
+input::placeholder { color: #557479; }
+select {
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238aa5a9' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+}
+.phone { display: flex; }
+.cc {
+  display: grid; place-items: center; padding: 0 12px;
+  background: var(--panel); color: var(--muted); font-weight: 600;
+  border: 1px solid var(--line); border-right: 0; border-radius: 10px 0 0 10px;
+}
+.phone input { border-radius: 0 10px 10px 0; }
+:is(input, select, button, a):focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+input[aria-invalid="true"] { border-color: var(--red); }
+.hint { min-height: 18px; margin-top: 6px; font-size: 12.5px; color: var(--teal); }
+.err { margin-top: 10px; font-size: 13.5px; color: var(--red); }
+.err:empty { display: none; }
+.fine { margin: 12px 0 0; font-size: 12px; line-height: 1.4; color: var(--muted); }
+
+.cta {
+  display: block; width: 100%; margin-top: 16px; padding: 14px;
+  border: 0; border-radius: 12px;
+  background: var(--teal); color: #04191c;
+  font: 700 16px var(--body); text-align: center; text-decoration: none; cursor: pointer;
+}
+.cta:hover { filter: brightness(1.08); }
+.cta[disabled] { opacity: .6; cursor: default; }
+.cta.ghost { background: transparent; color: var(--teal); border: 1px solid var(--teal); }
+
+.jump {
+  position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 6;
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 18px; border: 0; border-radius: 999px;
+  background: var(--teal); color: #04191c;
+  font: 700 15px var(--body);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .45); cursor: pointer;
+}
+.jump[hidden] { display: none; }
+.jump svg { width: 16px; height: 16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .msg.in { animation: none; }
+  .typing i { animation: none; opacity: .7; }
+}
+</style>
+<noscript><style>.msg[hidden] { display: block !important; } .jump { display: none; }</style></noscript>
+</head>
+<body>
+<div id="app">
+  <header class="bar">
+    <div class="avatar" aria-hidden="true">HR</div>
+    <div class="who">
+      <b>HR Bridge
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#35d9c6"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#04191c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </b>
+      <span id="status">online</span>
+    </div>
+  </header>
+
+  <main id="chat" aria-live="polite">
+    <div class="msg" data-flow data-delay="600" hidden>
+      <p>If you run a business with staff, <b>this message is for you.</b> 👇</p>
+      <span class="t"></span>
+    </div>
+
+    <div class="msg pain" data-flow data-delay="800" hidden>
+      <p>Do you spend the last 3 days of every month on <b>WhatsApp, Excel and calls to your accountant</b> just to close salary?</p>
+      <span class="t"></span>
+    </div>
+
+    <div class="msg pain" data-flow data-delay="700" hidden>
+      <p>Do your people keep asking <b>“Sir, kitni leaves bachi hain?”</b> and nobody has the answer?</p>
+      <span class="t"></span>
+    </div>
+
+    <div class="msg pain" data-flow data-delay="700" hidden>
+      <p>Does a new joiner start with <b>no offer letter</b> and documents scattered across WhatsApp?</p>
+      <span class="t"></span>
+    </div>
+
+    <div class="msg" data-flow data-delay="700" hidden>
+      <p>Is your HR system... <b>you?</b></p>
+      <span class="t"></span>
+    </div>
+
+    <div class="msg" data-flow data-delay="800" hidden>
+      <p>If you said <b>yes</b> to even one, meet HR Bridge. 🙏</p>
+      <span class="t"></span>
+    </div>
+
+    <div class="msg hero" data-flow data-delay="1000" data-jump hidden>
+      <h1>HR that runs on a system.<span>Not on you.</span></h1>
+      <p>Attendance, leave, payroll with PF, ESIC, PT and TDS, CA-ready reports and an employee portal. Built for Indian SMEs by Comedge Labs.</p>
+      <div class="price">
+        <strong><span class="rs">₹</span>499</strong>
+        <small>per month, up to 10 employees.<br>All features. No lock-in.</small>
+      </div>
+      <span class="t"></span>
+    </div>
+
+    <div class="msg video" data-flow data-delay="800" hidden>
+      <button type="button" class="poster" id="play" aria-label="Play the 2-minute HR Bridge walkthrough">
+        <img src="https://i.ytimg.com/vi/WGNrTD7qXsY/hqdefault.jpg" alt="" width="480" height="360" loading="lazy">
+        <span class="play"></span>
+      </button>
+      <p>The 2-minute walkthrough</p>
+      <span class="t"></span>
+    </div>
+
+    <div class="msg" data-flow data-delay="900" hidden>
+      <p>🎁 <b>30 days free.</b> No credit card. No commitment.</p>
+      <p>We set it up for your team in one day. If it doesn't work for you, walk away.</p>
+      <span class="t"></span>
+    </div>
+
+    <div class="msg form" id="formMsg" data-flow data-delay="900" hidden>
+      <p>Share your details and we'll reach out on WhatsApp to get you started. 🙏</p>
+      <form id="lead" novalidate>
+        <label for="f-mobile">WhatsApp number <span class="req" aria-hidden="true">*</span></label>
+        <div class="phone">
+          <span class="cc" aria-hidden="true">+91</span>
+          <input id="f-mobile" name="mobile" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="16" placeholder="98XXXXXXXX" required>
+        </div>
+        <div class="hint" id="saved" aria-live="polite"></div>
+
+        <label for="f-name">Your name</label>
+        <input id="f-name" name="name" type="text" autocomplete="name" maxlength="80">
+
+        <label for="f-company">Company name</label>
+        <input id="f-company" name="company" type="text" autocomplete="organization" maxlength="100">
+
+        <label for="f-emp">How many employees?</label>
+        <select id="f-emp" name="employees">
+          <option value="">Select...</option>
+          <option>1–10</option>
+          <option>11–20</option>
+          <option>21–30</option>
+          <option>31–50</option>
+          <option>50+</option>
+        </select>
+
+        <div class="err" id="err" role="alert"></div>
+        <button type="submit" class="cta" id="go">Start my 30-day free trial</button>
+        <p class="fine">By continuing, you agree to be contacted by Comedge Labs on WhatsApp about HR Bridge.</p>
+      </form>
+      <span class="t"></span>
+    </div>
+
+    <div class="msg" id="thanks" hidden>
+      <p>🙏 <b>Thank you!</b></p>
+      <p>We'll reach out on your WhatsApp shortly to set up your free trial. To talk right now, tap below.</p>
+      <a class="cta ghost" id="wa" href="#" target="_blank" rel="noopener">💬 Chat with Comedge Labs</a>
+      <span class="t"></span>
+    </div>
+
+    <div class="typing" id="typing" hidden aria-hidden="true"><i></i><i></i><i></i></div>
+  </main>
+
+  <button type="button" class="jump" id="jump" hidden>
+    Start free trial
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="#04191c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Settings: change these ---------- */
+  var ENDPOINT  = 'PASTE_YOUR_WEB_APP_URL_HERE'; // Google Apps Script Web app URL
+  var TOKEN     = 'hrb-change-this';             // must match TOKEN in Code.gs
+  var WA_NUMBER = '919860266617';                // WhatsApp number for the Thank You button
+  /* -------------------------------------------- */
+
+  var configured = /^https:\/\//.test(ENDPOINT);
+  var $ = function (id) { return document.getElementById(id); };
+  var chat = $('chat'), typing = $('typing'), status = $('status'), jump = $('jump');
+  var formMsg = $('formMsg'), thanks = $('thanks'), form = $('lead');
+  var fMobile = $('f-mobile'), fName = $('f-name'), fCompany = $('f-company'), fEmp = $('f-emp');
+  var hint = $('saved'), err = $('err'), go = $('go');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var submitted = false;
+
+  /* ---------- Where did this lead come from? ---------- */
+  var source = 'direct';
+  try {
+    var q = new URLSearchParams(location.search).get('src');
+    if (q) source = q;
+    else if (document.referrer) source = new URL(document.referrer).hostname;
+  } catch (e) {}
+
+  /* ---------- One id per visit, so typing updates one row ---------- */
+  var sid = null;
+  try { sid = sessionStorage.getItem('hrb_sid'); } catch (e) {}
+  if (!sid) {
+    sid = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+        : Date.now().toString(36) + Math.random().toString(36).slice(2);
+    try { sessionStorage.setItem('hrb_sid', sid); } catch (e) {}
+  }
+
+  /* ---------- Saving to Google Sheets ---------- */
+  function normMobile(v) {
+    var d = String(v || '').replace(/\D/g, '');
+    if (d.length === 12 && d.indexOf('91') === 0) d = d.slice(2);
+    else if (d.length === 11 && d.charAt(0) === '0') d = d.slice(1);
+    return /^[6-9]\d{9}$/.test(d) ? d : '';
+  }
+
+  function save(final) {
+    if (submitted && !final) return false;
+    var m = normMobile(fMobile.value);
+    if (!m) return false;                       // capture starts once a full number is typed
+    if (!configured) {
+      if (window.console) console.warn('HR Bridge: ENDPOINT is not set, nothing was saved.');
+      return false;
+    }
+    var f = { Source: source };
+    if (fName.value.trim()) f.Name = fName.value.trim();
+    if (fCompany.value.trim()) f.Company = fCompany.value.trim();
+    if (fEmp.value) f.Employees = fEmp.value;
+    var body = JSON.stringify({ t: TOKEN, sid: sid, mobile: m, fields: f, submitted: !!final });
+    var sent = navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, body);
+    if (!sent) {
+      try { fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', keepalive: true, body: body }); } catch (e) { return false; }
+    }
+    return true;
+  }
+
+  var saveTimer;
+  function later() {
+    if (submitted) return;
+    err.textContent = '';
+    fMobile.removeAttribute('aria-invalid');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      if (save(false)) hint.textContent = '✓ Saved — take your time';
+    }, 900);
+  }
+  form.addEventListener('input', later);
+  form.addEventListener('change', later);
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') save(false);
+  });
+  window.addEventListener('pagehide', function () { save(false); });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (submitted) return;
+    if (!normMobile(fMobile.value)) {
+      err.textContent = 'Enter a valid 10-digit WhatsApp number.';
+      fMobile.setAttribute('aria-invalid', 'true');
+      fMobile.focus();
+      return;
+    }
+    clearTimeout(saveTimer);
+    save(true);
+    submitted = true;
+    go.disabled = true;
+    syncJump();
+    showThanks();
+  });
+
+  function showThanks() {
+    var nm = fName.value.trim();
+    var text = 'Hi, ' + (nm ? 'this is ' + nm + '. ' : '') + 'I just registered for the HR Bridge free trial.';
+    $('wa').href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(text);
+    formMsg.hidden = true;
+    setTyping(true, thanks);
+    setTimeout(function () {
+      setTyping(false);
+      reveal(thanks);
+      thanks.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    }, reduce ? 0 : 700);
+  }
+
+  /* ---------- The chat conversation ---------- */
+  var msgs = [].slice.call(chat.querySelectorAll('.msg[data-flow]'));
+  var idx = 0, timer = null;
+  var jumpOn = false, formSeen = false;
+
+  function stamp(el) {
+    var t = el.querySelector('.t');
+    if (t) t.textContent = new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+  }
+  function nearBottom() {
+    return window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 180;
+  }
+  function scrollDown() {
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: reduce ? 'auto' : 'smooth' });
+  }
+  function setTyping(on, before) {
+    var stick = nearBottom();
+    if (on) chat.insertBefore(typing, before || null);
+    typing.hidden = !on;
+    status.textContent = on ? 'typing…' : 'online';
+    if (on && stick) scrollDown();
+  }
+  function reveal(m) {
+    var stick = nearBottom();
+    m.hidden = false;
+    stamp(m);
+    m.classList.add('in');
+    if (m.hasAttribute('data-jump')) { jumpOn = true; syncJump(); }
+    if (stick) scrollDown();
+  }
+  function next() {
+    if (idx >= msgs.length) { setTyping(false); return; }
+    var m = msgs[idx];
+    if (reduce) { reveal(m); idx++; next(); return; }
+    setTyping(true, m);
+    timer = setTimeout(function () {
+      setTyping(false);
+      reveal(m);
+      idx++;
+      next();
+    }, +m.getAttribute('data-delay') || 700);
+  }
+  function revealAll() {
+    clearTimeout(timer);
+    setTyping(false);
+    while (idx < msgs.length) { reveal(msgs[idx]); idx++; }
+  }
+
+  /* ---------- Floating "Start free trial" button ---------- */
+  function syncJump() { jump.hidden = !(jumpOn && !formSeen && !submitted); }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (en) {
+      formSeen = en[0].isIntersecting;
+      syncJump();
+    }, { threshold: 0.2 }).observe(formMsg);
+  }
+  jump.addEventListener('click', function () {
+    revealAll();
+    jumpOn = false;
+    syncJump();
+    formMsg.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    setTimeout(function () { fMobile.focus({ preventScroll: true }); }, 500);
+  });
+
+  /* ---------- Video: load YouTube only when tapped ---------- */
+  $('play').addEventListener('click', function () {
+    var f = document.createElement('iframe');
+    f.className = 'player';
+    f.src = 'https://www.youtube-nocookie.com/embed/WGNrTD7qXsY?autoplay=1&rel=0&playsinline=1';
+    f.title = 'HR Bridge, 2-minute walkthrough';
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.setAttribute('allowfullscreen', '');
+    this.replaceWith(f);
+  });
+
+  setTimeout(next, 400);
+})();
+</script>
+</body>
+</html>
