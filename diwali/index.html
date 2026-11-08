@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🪔 A diya has been lit for you</title>
+<meta name="description" content="Someone has lit a diya for you this Diwali. Open it and light it yourself.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="🪔 A diya has been lit for you">
+<meta property="og:description" content="Open it and light it yourself. Happy Diwali!">
+<meta property="og:image" content="https://go.comedgelabs.com/diwali-preview.png"><!-- 1200×630 image; replace with your own -->
+<meta name="theme-color" content="#120A26">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=DM+Sans:wght@400;500;700&family=Yatra+One&family=Mogra&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Gujarati:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#120A26; --night2:#1E1240; --plum:#3A1A4F; --gold:#FFC857; --gold2:#F59E2E; --marigold:#FF8A1F;
+  --rose:#E8457A; --teal:#2EC4B6; --cream:#FFF4DC; --muted:#BFAFD9;
+  --sans:'DM Sans','Noto Sans Devanagari','Noto Sans Gujarati',system-ui,sans-serif;
+  --display:'Fraunces',serif;
+}
+html[lang="hi"],html[lang="mr"]{--display:'Yatra One','Noto Sans Devanagari',serif}
+html[lang="gu"]{--display:'Mogra','Noto Sans Gujarati',serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{font-family:var(--sans);color:var(--cream);background:radial-gradient(120% 80% at 50% 0%,var(--night2) 0%,var(--night) 60%) fixed;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input{font-family:inherit}
+button{cursor:pointer;border:0}
+#sky{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:460px;margin:0 auto;padding:18px 20px 40px;text-align:center}
+
+/* top bar */
+.top{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted)}
+.top b{color:var(--gold);font-weight:700}
+.langs{display:flex;gap:4px}
+.langs button{background:rgba(255,255,255,.06);color:var(--muted);border-radius:999px;padding:5px 9px;font-size:12px}
+.langs button.on{background:var(--gold);color:var(--night);font-weight:700}
+
+/* hero */
+.hero{min-height:calc(100svh - 60px);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;padding:10px 0}
+.kicker{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);opacity:.9}
+.litfor{font-family:var(--display);font-size:clamp(26px,7.5vw,34px);line-height:1.2;font-weight:500;max-width:340px}
+.hint{font-size:14.5px;color:var(--muted);min-height:22px;transition:opacity .4s}
+
+/* the diya */
+.diyabox{position:relative;width:240px;height:240px;margin:16px 0 6px;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;outline:none;border-radius:50%}
+.diyabox:focus-visible{box-shadow:0 0 0 3px rgba(255,200,87,.5)}
+.ring{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:3}
+.ring .bg{stroke:rgba(255,200,87,.12)}
+.ring .fg{stroke:var(--gold);stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 6px var(--gold))}
+.glow{position:absolute;left:50%;top:44%;width:30px;height:30px;margin:-15px;border-radius:50%;background:radial-gradient(circle,rgba(255,200,87,.9),rgba(255,138,31,.35) 40%,transparent 70%);transform:scale(0);transition:transform 1.4s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.lit .glow{transform:scale(11)}
+.diya{position:absolute;inset:0;width:100%;height:100%}
+.flame{transform-origin:120px 118px;transform:scale(0);transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.lit .flame{transform:scale(1);animation:flicker 2.2s ease-in-out infinite .5s}
+.wick-ember{opacity:0;transition:opacity .2s}
+.holding .wick-ember{opacity:1}
+@keyframes flicker{0%,100%{transform:scale(1) skewX(0)}25%{transform:scale(1.04,.97) skewX(2deg)}50%{transform:scale(.97,1.05) skewX(-2deg)}75%{transform:scale(1.02,.99) skewX(1deg)}}
+.holding .diya{animation:shake .12s linear infinite}
+@keyframes shake{50%{transform:translateX(.6px)}}
+
+/* greeting reveal */
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .9s,transform .9s;pointer-events:none}
+.show .reveal{opacity:1;transform:none;pointer-events:auto}
+.row-diyas{display:flex;justify-content:center;gap:6px;margin:6px 0 0;flex-wrap:nowrap}
+.mini{width:30px;height:34px;position:relative}
+.mini svg{width:100%;height:100%}
+.mini .mf{transform-origin:15px 13px;transform:scale(0);transition:transform .4s cubic-bezier(.3,1.6,.5,1)}
+.mini.on .mf{transform:scale(1);animation:flicker 1.8s ease-in-out infinite}
+.mini.on::after{content:"";position:absolute;left:50%;top:6px;width:26px;height:26px;margin-left:-13px;border-radius:50%;background:radial-gradient(circle,rgba(255,200,87,.45),transparent 70%);pointer-events:none}
+
+.greet{position:relative;margin:26px auto 0;width:min(340px,88vw);aspect-ratio:1}
+.rangoli{position:absolute;inset:0;width:100%;height:100%}
+.rangoli path,.rangoli circle.s{fill:none;stroke-width:2.2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+.show .rangoli path,.show .rangoli circle.s{animation:draw 2.4s cubic-bezier(.5,0,.2,1) forwards}
+.rangoli circle.dot{opacity:0}
+.show .rangoli circle.dot{animation:fadein .6s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fadein{to{opacity:1}}
+.gtext{position:absolute;inset:23%;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;border-radius:50%;background:radial-gradient(circle,rgba(18,10,38,.92) 55%,rgba(18,10,38,0) 72%)}
+.gtext .h{font-family:var(--display);font-size:clamp(22px,6.4vw,28px);line-height:1.15;color:var(--gold);text-shadow:0 0 18px rgba(255,200,87,.35)}
+.gtext .nm{font-family:var(--display);font-size:clamp(20px,5.8vw,25px);color:var(--cream);word-break:break-word;max-width:100%}
+.msg{font-size:16px;line-height:1.55;color:#EADFF7;max-width:340px;margin:18px auto 4px}
+.sign{font-size:14px;color:var(--gold);font-style:italic}
+.org{font-size:12px;color:var(--muted);letter-spacing:.06em;margin-top:2px}
+.biz .who{font-size:13.5px;color:var(--muted);margin:-2px 0 12px}
+
+/* cards */
+.card{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border:1px solid rgba(255,200,87,.18);border-radius:20px;padding:20px 18px;margin-top:26px;text-align:left}
+.card h2{font-family:var(--display);font-size:22px;font-weight:500;color:var(--gold);margin-bottom:4px}
+.card p{font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+.field{display:block;margin-bottom:10px}
+.field span{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.field input{width:100%;background:rgba(0,0,0,.25);border:1.5px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 14px;font-size:16px;color:var(--cream);outline:none;transition:border-color .2s}
+.field input:focus{border-color:var(--gold)}
+.btn{display:flex;width:100%;justify-content:center;align-items:center;gap:8px;border-radius:14px;padding:14px 16px;font-size:16px;font-weight:700;transition:transform .1s,filter .2s}
+.btn:active{transform:scale(.98)}
+.btn.gold{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#2A1300;box-shadow:0 8px 24px rgba(245,158,46,.3)}
+.btn.wa{background:#25D366;color:#073B1F}
+.btn.ghost{background:rgba(255,255,255,.07);color:var(--cream);font-weight:500;font-size:14.5px}
+.btn svg{width:20px;height:20px}
+.err{color:#FF9DB5;font-size:13px;min-height:18px;margin:2px 0 6px}
+.ok{color:var(--teal);font-size:14px;min-height:20px;margin-top:8px;text-align:center}
+.chainnote{font-size:12.5px;color:var(--muted);text-align:center;margin-top:10px}
+
+/* lanterns */
+.lantern{position:fixed;z-index:5;width:54px;pointer-events:none;animation:rise 9s cubic-bezier(.4,0,.6,1) forwards}
+.lantern .body{width:54px;height:66px;border-radius:14px 14px 20px 20px;background:radial-gradient(circle at 50% 70%,#FFE29A,#FF9A3C 55%,#D9531E);box-shadow:0 0 30px 8px rgba(255,154,60,.45)}
+.lantern .tag{position:absolute;top:70px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:12px;color:var(--cream);background:rgba(0,0,0,.35);padding:3px 8px;border-radius:8px;max-width:70vw;overflow:hidden;text-overflow:ellipsis;opacity:.9}
+@keyframes rise{0%{transform:translate(0,0) scale(1);opacity:0}8%{opacity:1}50%{transform:translate(18px,-50vh) scale(.75)}100%{transform:translate(-10px,-105vh) scale(.4);opacity:0}}
+
+/* business card */
+.biz{text-align:center}
+.biz .logo{width:52px;height:52px;border-radius:14px;background:var(--gold);color:var(--night);display:grid;place-items:center;font-weight:700;font-size:18px;margin:0 auto 10px}
+.biz .offer{background:rgba(255,200,87,.1);border:1px dashed rgba(255,200,87,.45);border-radius:12px;padding:10px 12px;color:var(--cream);font-size:14.5px;line-height:1.45;margin:6px 0 12px}
+.counter{font-size:13px;color:var(--gold);background:rgba(255,200,87,.08);border:1px solid rgba(255,200,87,.2);border-radius:999px;padding:5px 12px;margin-top:6px;display:none}
+.about h2{margin-bottom:6px}
+.about ul{list-style:none;display:grid;gap:10px;margin:4px 0 14px}
+.about li{display:flex;gap:10px;font-size:14.5px;line-height:1.45;color:var(--cream)}
+.about li i{font-style:normal;flex:0 0 26px;height:26px;border-radius:8px;background:rgba(255,200,87,.12);display:grid;place-items:center;font-size:14px}
+.about .ul{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.uses{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.uses span{font-size:13px;padding:6px 10px;border-radius:999px;background:rgba(46,196,182,.12);color:#9FEDE5}
+.btns{display:grid;gap:8px}
+.foot{font-size:11.5px;color:#8C7BAE;margin-top:22px}
+.foot a{color:var(--gold);text-decoration:none}
+.sound{position:fixed;right:14px;bottom:14px;z-index:6;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.08);color:var(--cream);font-size:16px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<button class="sound" id="sound" aria-label="Sound on or off">🔔</button>
+
+<div class="wrap" id="app">
+  <div class="top">
+    <span><b id="brand">Comedge Labs</b></span>
+    <div class="langs" id="langs">
+      <button data-l="en">EN</button><button data-l="hi">हिं</button><button data-l="gu">ગુ</button><button data-l="mr">मरा</button>
+    </div>
+  </div>
+
+  <!-- 1 · light the diya -->
+  <section class="hero">
+    <div class="kicker">✦ Diwali 2026 ✦</div>
+    <h1 class="litfor" id="litfor"></h1>
+    <div class="diyabox" id="diyabox" tabindex="0" role="button" aria-label="Press and hold to light the diya">
+      <div class="glow"></div>
+      <svg class="ring" viewBox="0 0 240 240"><circle class="bg" cx="120" cy="120" r="112"/><circle class="fg" id="ringfg" cx="120" cy="120" r="112" pathLength="1"/></svg>
+      <svg class="diya" viewBox="0 0 240 240" aria-hidden="true">
+        <defs>
+          <linearGradient id="clay" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E0743A"/><stop offset="1" stop-color="#8E3415"/></linearGradient>
+          <linearGradient id="rim" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFC857"/><stop offset=".5" stop-color="#FFE7A8"/><stop offset="1" stop-color="#F59E2E"/></linearGradient>
+          <radialGradient id="fl" cx=".5" cy=".75" r=".7"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".25" stop-color="#FFF1A8"/><stop offset=".6" stop-color="#FFB13B"/><stop offset="1" stop-color="#FF5E1A" stop-opacity="0"/></radialGradient>
+        </defs>
+        <!-- lamp -->
+        <path d="M58 140 Q120 128 182 140 Q186 146 176 150 Q150 196 120 196 Q90 196 64 150 Q54 146 58 140Z" fill="url(#clay)"/>
+        <path d="M182 140 Q200 132 206 120 Q200 142 178 150Z" fill="#B44A1E"/>
+        <ellipse cx="120" cy="141" rx="62" ry="9" fill="url(#rim)"/>
+        <ellipse cx="120" cy="141" rx="54" ry="5.5" fill="#5A2410"/>
+        <g fill="#FFC857" opacity=".85"><circle cx="90" cy="166" r="3"/><circle cx="105" cy="172" r="3"/><circle cx="120" cy="174" r="3.2"/><circle cx="135" cy="172" r="3"/><circle cx="150" cy="166" r="3"/></g>
+        <path d="M84 158 Q120 178 156 158" stroke="#FFC857" stroke-width="1.6" fill="none" opacity=".6"/>
+        <!-- wick -->
+        <path d="M118 138 Q119 128 120 120 Q121 128 122 138Z" fill="#3A2A20"/>
+        <circle class="wick-ember" cx="120" cy="120" r="3" fill="#FF8A1F"/>
+        <!-- flame -->
+        <g class="flame">
+          <path d="M120 58 C134 82 140 98 134 110 C130 118 125 121 120 121 C115 121 110 118 106 110 C100 98 106 82 120 58Z" fill="url(#fl)"/>
+          <path d="M120 86 C126 98 128 106 125 112 C123 116 121 117 120 117 C119 117 117 116 115 112 C112 106 114 98 120 86Z" fill="#FFFDF2"/>
+        </g>
+      </svg>
+    </div>
+    <div class="hint" id="hint"></div>
+    <div class="counter" id="counter"></div>
+  </section>
+
+  <!-- 2 · greeting -->
+  <section id="greetSec" aria-live="polite">
+    <div class="row-diyas reveal" id="row"></div>
+    <div class="greet reveal">
+      <svg class="rangoli" id="rangoli" viewBox="-170 -170 340 340" aria-hidden="true"></svg>
+      <div class="gtext"><div class="h" id="gh"></div><div class="nm" id="gname"></div></div>
+    </div>
+    <p class="msg reveal" id="gmsg"></p>
+    <p class="sign reveal" id="gsign"></p>
+    <p class="org reveal" id="gorg"></p>
+
+    <!-- 3 · wish lantern -->
+    <div class="card reveal" id="wishCard">
+      <h2 id="wishTitle"></h2>
+      <p id="wishSub"></p>
+      <label class="field"><input id="wishIn" maxlength="60" autocomplete="off"></label>
+      <button class="btn gold" id="wishBtn"></button>
+      <div class="ok" id="wishOk"></div>
+    </div>
+
+    <!-- 4 · pass the light -->
+    <div class="card reveal" id="passCard">
+      <h2 id="passTitle"></h2>
+      <p id="passSub"></p>
+      <label class="field"><span id="lblYou"></span><input id="youIn" maxlength="40" autocomplete="name"></label>
+      <label class="field"><span id="lblThem"></span><input id="themIn" maxlength="40" autocomplete="off"></label>
+      <div class="err" id="passErr"></div>
+      <button class="btn wa" id="passBtn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.3-.8-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2Z"/></svg><span id="passBtnT"></span></button>
+      <div class="ok" id="passOk"></div>
+      <div class="chainnote" id="chainNote"></div>
+    </div>
+
+    <!-- 5 · what Chat Lead is (shown when CONFIG.showAbout is true) -->
+    <div class="card about reveal" id="aboutCard">
+      <h2 id="abTitle"></h2>
+      <p id="abSub"></p>
+      <ul id="abList"></ul>
+      <div class="ul" id="abUsesT"></div>
+      <div class="uses" id="abUses"></div>
+      <div class="btns">
+        <button class="btn gold" id="abBtn"></button>
+        <button class="btn ghost" id="abEx"></button>
+      </div>
+    </div>
+
+    <!-- 6 · from the business -->
+    <div class="card biz reveal" id="bizCard">
+      <div class="logo" id="bizLogo">CL</div>
+      <h2 id="bizName"></h2>
+      <div class="who" id="bizWho"></div>
+      <div class="offer" id="bizOffer"></div>
+      <button class="btn gold" id="bizBtn"></button>
+    </div>
+
+    <p class="foot reveal" id="foot"></p>
+  </section>
+</div>
+
+<script>
+/* =====================================================================
+   CONFIG · change these per client
+   ===================================================================== */
+const CONFIG = {
+  sender: 'Viplav Dhandhukia',      // whose greeting this is. For a client, put the owner's name or leave empty
+  business: 'Comedge Labs',
+  initials: 'CL',
+  ownerWhatsApp: '919581173078',   // digits only, with country code
+  scriptUrl: 'https://script.google.com/macros/s/AKfycbxNhQT4YWZx9dKYZOs8gHKXU1hEYZnRyKr6NFof5S_5iuvkcPEzBl5YUmHvXpYUMwMYWg/exec',                    // Greeting tracker web app URL (diwali-tracker-Code.gs). Empty = nothing is tracked
+  sharedKey: '',                    // must match SHARED_KEY in the script, if you set one
+  showCounter: 25,                  // show "N diyas lit" once at least this many are lit. 0 = never
+  // "What is Chat Lead" card. true for Comedge Labs' own greeting; false for a client's greeting.
+  showAbout: true,
+  comedgeWhatsApp: '919581173078',  // where "Tell us what you need" goes
+  exampleUrl: 'https://comedgelabs.com',
+  // Offer shown in the business card, per language. Leave empty to hide it (use it for clients' offers).
+  offer: { en: '', hi: '', gu: '', mr: '' },
+  replyText: '',                    // added to the reply message, e.g. an offer code like DIWALI10
+  footer: '<a href="https://comedgelabs.com" target="_blank" rel="noopener">Comedge Labs</a> · custom software for your business · made with Chat Lead'
+};
+
+/* =====================================================================
+   TEXT
+   ===================================================================== */
+const T = {
+ en:{ litFor:'{from} has lit a diya for you', litAnon:'A diya has been lit for you',
+  hold:'Press and hold the diya to light it', holdMore:'Hold a little longer…', lit:'',
+  gh:'Happy Diwali', msg:'May this light stay with you all year: in your home, in your work, and with everyone you love.',
+  sign:'With warm wishes, {from}',
+  wishTitle:'Make a wish', wishSub:'Write it on a sky lantern and let it go. Only you will see it.', wishPh:'Your wish…',
+  wishBtn:'Release the lantern 🏮', wishOk:'Your wish is on its way ✨',
+  passTitle:'Pass the light', passSub:'Light a diya for someone you love. They\'ll get this greeting with their name on it.',
+  you:'Your name', them:'Their name', passBtn:'Send on WhatsApp', needBoth:'Please enter both names.',
+  passOk:'Sent! Light another one 🪔', chain:'{n} diyas lit from this page so far',
+  share:'🪔 {to}, I\'ve lit a diya for you this Diwali. Open it and light it yourself:\n{link}',
+  bizBtn:'Wish {biz} back', reply:'Happy Diwali to you too, {biz}! 🪔 — {name}',
+  counter:'🪔 {n} diyas lit this Diwali',
+  abTitle:"Comedge Labs: software built around how you work", abSub:"We build custom tools for Indian businesses, shaped to your exact requirements. This greeting is a small example, made with Chat Lead, one of our products.",
+  ab1:"Custom software for your business: orders, dispatch, HR, enquiries, price tracking", ab2:"Built to fit the way you already work, so you don't have to change for it", ab3:"Runs on WhatsApp, Google Sheets and the phones your team already uses",
+  abUsesT:"What we've built", abUses:["Order & dispatch system", "HR management", "Commodity price tracking", "Chat Lead: WhatsApp enquiries & greetings"],
+  abBtn:"Tell us what you need", abEx:"Visit comedgelabs.com ↗",
+  abMsg:"Hi {sender}, I saw your Diwali greeting. I'd like to talk about a solution for my business.\nName: {name}\nBusiness: \nWhat I need: " },
+ hi:{ litFor:'{from} ने आपके लिए एक दीया जलाया है', litAnon:'आपके लिए एक दीया जलाया गया है',
+  hold:'दीया जलाने के लिए उसे दबाकर रखें', holdMore:'थोड़ा और दबाकर रखें…',
+  gh:'शुभ दीपावली', msg:'यह रोशनी पूरे साल आपके साथ रहे: आपके घर में, आपके काम में और आपके हर अपने के साथ।',
+  sign:'शुभकामनाओं सहित, {from}',
+  wishTitle:'एक मनोकामना करें', wishSub:'इसे आकाश कंदील पर लिखें और उड़ा दें। इसे सिर्फ़ आप देखेंगे।', wishPh:'आपकी मनोकामना…',
+  wishBtn:'कंदील उड़ाएँ 🏮', wishOk:'आपकी मनोकामना रवाना हो गई ✨',
+  passTitle:'रोशनी आगे बढ़ाएँ', passSub:'किसी अपने के लिए दीया जलाएँ। उन्हें उनके नाम के साथ यह शुभकामना मिलेगी।',
+  you:'आपका नाम', them:'उनका नाम', passBtn:'WhatsApp पर भेजें', needBoth:'कृपया दोनों नाम लिखें।',
+  passOk:'भेज दिया! एक और जलाएँ 🪔', chain:'इस पेज से अब तक {n} दीये जले',
+  share:'🪔 {to}, इस दिवाली मैंने आपके लिए एक दीया जलाया है। खोलिए और खुद रोशन कीजिए:\n{link}',
+  bizBtn:'{biz} को शुभकामना भेजें', reply:'आपको भी शुभ दीपावली, {biz}! 🪔 — {name}',
+  counter:'🪔 इस दिवाली {n} दीये जले',
+  abTitle:"Comedge Labs: आपके काम के हिसाब से बना सॉफ़्टवेयर", abSub:"हम भारतीय बिज़नेस के लिए उनकी ज़रूरत के हिसाब से कस्टम टूल बनाते हैं। यह शुभकामना उसका एक छोटा उदाहरण है, जो हमारे प्रोडक्ट Chat Lead से बनी है।",
+  ab1:"आपके बिज़नेस के लिए कस्टम सॉफ़्टवेयर: ऑर्डर, डिस्पैच, HR, पूछताछ, रेट ट्रैकिंग", ab2:"आपके काम करने के तरीके के हिसाब से बना, आपको उसके हिसाब से बदलना नहीं पड़ता", ab3:"WhatsApp, Google Sheet और उसी फ़ोन पर चलता है जो आपकी टीम पहले से इस्तेमाल करती है",
+  abUsesT:"हमने क्या बनाया है", abUses:["ऑर्डर और डिस्पैच सिस्टम", "HR मैनेजमेंट", "कमोडिटी रेट ट्रैकिंग", "Chat Lead: WhatsApp पूछताछ और शुभकामनाएँ"],
+  abBtn:"अपनी ज़रूरत बताएँ", abEx:"comedgelabs.com देखें ↗",
+  abMsg:"नमस्ते {sender}, मैंने आपकी दिवाली शुभकामना देखी। मुझे अपने बिज़नेस के लिए एक सॉल्यूशन पर बात करनी है।\nनाम: {name}\nबिज़नेस: \nज़रूरत: " },
+ gu:{ litFor:'{from}એ તમારા માટે એક દીવો પ્રગટાવ્યો છે', litAnon:'તમારા માટે એક દીવો પ્રગટાવવામાં આવ્યો છે',
+  hold:'દીવો પ્રગટાવવા તેને દબાવી રાખો', holdMore:'થોડું વધુ દબાવી રાખો…',
+  gh:'શુભ દીપાવલી', msg:'આ પ્રકાશ આખું વર્ષ તમારી સાથે રહે: તમારા ઘરમાં, તમારા કામમાં અને તમારા દરેક સ્વજન સાથે.',
+  sign:'શુભેચ્છાઓ સાથે, {from}',
+  wishTitle:'એક મનોકામના કરો', wishSub:'તેને આકાશી ફાનસ પર લખો અને ઉડાડી દો. તે ફક્ત તમે જ જોશો.', wishPh:'તમારી મનોકામના…',
+  wishBtn:'ફાનસ ઉડાડો 🏮', wishOk:'તમારી મનોકામના રવાના થઈ ✨',
+  passTitle:'પ્રકાશ આગળ વધારો', passSub:'કોઈ સ્વજન માટે દીવો પ્રગટાવો. તેમને તેમના નામ સાથે આ શુભેચ્છા મળશે.',
+  you:'તમારું નામ', them:'તેમનું નામ', passBtn:'WhatsApp પર મોકલો', needBoth:'કૃપા કરીને બંને નામ લખો.',
+  passOk:'મોકલાઈ ગયું! બીજો દીવો પ્રગટાવો 🪔', chain:'આ પેજ પરથી અત્યાર સુધી {n} દીવા પ્રગટ્યા',
+  share:'🪔 {to}, આ દિવાળીએ મેં તમારા માટે એક દીવો પ્રગટાવ્યો છે. ખોલો અને જાતે પ્રગટાવો:\n{link}',
+  bizBtn:'{biz}ને શુભેચ્છા મોકલો', reply:'તમને પણ શુભ દીપાવલી, {biz}! 🪔 — {name}',
+  counter:'🪔 આ દિવાળીએ {n} દીવા પ્રગટ્યા',
+  abTitle:"Comedge Labs: તમારા કામ મુજબ બનેલું સોફ્ટવેર", abSub:"અમે ભારતીય બિઝનેસ માટે તેમની જરૂરિયાત મુજબ કસ્ટમ ટૂલ બનાવીએ છીએ. આ શુભેચ્છા તેનું એક નાનું ઉદાહરણ છે, જે અમારી પ્રોડક્ટ Chat Lead થી બની છે.",
+  ab1:"તમારા બિઝનેસ માટે કસ્ટમ સોફ્ટવેર: ઓર્ડર, ડિસ્પેચ, HR, પૂછપરછ, ભાવ ટ્રેકિંગ", ab2:"તમારી કામ કરવાની રીત મુજબ બનેલું, તમારે તેના મુજબ બદલાવું નથી પડતું", ab3:"WhatsApp, Google Sheet અને તમારી ટીમ જે ફોન વાપરે છે તેના પર જ ચાલે છે",
+  abUsesT:"અમે શું બનાવ્યું છે", abUses:["ઓર્ડર અને ડિસ્પેચ સિસ્ટમ", "HR મેનેજમેન્ટ", "કોમોડિટી ભાવ ટ્રેકિંગ", "Chat Lead: WhatsApp પૂછપરછ અને શુભેચ્છાઓ"],
+  abBtn:"તમારી જરૂરિયાત જણાવો", abEx:"comedgelabs.com જુઓ ↗",
+  abMsg:"નમસ્તે {sender}, મેં તમારી દિવાળીની શુભેચ્છા જોઈ. મારે મારા બિઝનેસ માટે એક સોલ્યુશન વિશે વાત કરવી છે.\nનામ: {name}\nબિઝનેસ: \nજરૂરિયાત: " },
+ mr:{ litFor:'{from} यांनी तुमच्यासाठी एक दिवा लावला आहे', litAnon:'तुमच्यासाठी एक दिवा लावला आहे',
+  hold:'दिवा लावण्यासाठी त्याला दाबून ठेवा', holdMore:'थोडं अजून दाबून ठेवा…',
+  gh:'शुभ दीपावली', msg:'हा प्रकाश वर्षभर तुमच्यासोबत राहो: तुमच्या घरात, तुमच्या कामात आणि तुमच्या प्रत्येक आपल्या माणसासोबत.',
+  sign:'शुभेच्छांसह, {from}',
+  wishTitle:'एक इच्छा व्यक्त करा', wishSub:'ती आकाशकंदिलावर लिहा आणि उडवून द्या. ती फक्त तुम्हीच पाहाल.', wishPh:'तुमची इच्छा…',
+  wishBtn:'आकाशकंदील सोडा 🏮', wishOk:'तुमची इच्छा निघाली ✨',
+  passTitle:'प्रकाश पुढे न्या', passSub:'तुमच्या आवडत्या व्यक्तीसाठी दिवा लावा. त्यांना त्यांच्या नावासह ही शुभेच्छा मिळेल.',
+  you:'तुमचे नाव', them:'त्यांचे नाव', passBtn:'WhatsApp वर पाठवा', needBoth:'कृपया दोन्ही नावे लिहा.',
+  passOk:'पाठवले! अजून एक दिवा लावा 🪔', chain:'या पेजवरून आतापर्यंत {n} दिवे लागले',
+  share:'🪔 {to}, या दिवाळीला मी तुमच्यासाठी एक दिवा लावला आहे. उघडा आणि स्वतः उजळवा:\n{link}',
+  bizBtn:'{biz} ला शुभेच्छा द्या', reply:'तुम्हालाही शुभ दीपावली, {biz}! 🪔 — {name}',
+  counter:'🪔 या दिवाळीला {n} दिवे लागले',
+  abTitle:"Comedge Labs: तुमच्या कामानुसार बनवलेले सॉफ्टवेअर", abSub:"आम्ही भारतीय व्यवसायांसाठी त्यांच्या गरजेनुसार कस्टम टूल्स बनवतो. ही शुभेच्छा त्याचं एक छोटं उदाहरण आहे, जी आमच्या Chat Lead या प्रॉडक्टने बनली आहे.",
+  ab1:"तुमच्या व्यवसायासाठी कस्टम सॉफ्टवेअर: ऑर्डर, डिस्पॅच, HR, चौकशी, दर ट्रॅकिंग", ab2:"तुमच्या कामाच्या पद्धतीनुसार बनवलेले, तुम्हाला त्यानुसार बदलावं लागत नाही", ab3:"WhatsApp, Google Sheet आणि तुमची टीम आधीच वापरत असलेल्या फोनवर चालते",
+  abUsesT:"आम्ही काय बनवले आहे", abUses:["ऑर्डर आणि डिस्पॅच सिस्टम", "HR व्यवस्थापन", "कमोडिटी दर ट्रॅकिंग", "Chat Lead: WhatsApp चौकशी आणि शुभेच्छा"],
+  abBtn:"तुमची गरज सांगा", abEx:"comedgelabs.com पहा ↗",
+  abMsg:"नमस्कार {sender}, मी तुमची दिवाळी शुभेच्छा पाहिली. मला माझ्या व्यवसायासाठी एका सोल्यूशनबद्दल बोलायचं आहे.\nनाव: {name}\nव्यवसाय: \nगरज: " }
+};
+
+/* =====================================================================
+   STATE
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const P = new URLSearchParams(location.search);
+const clean = s => (s || '').replace(/[<>{}]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40);
+const store = { get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+const S = {
+  to: clean(P.get('to') || P.get('name')),
+  from: clean(P.get('from')) || CONFIG.sender || CONFIG.business,
+  src: P.get('src') || 'direct',
+  lang: ['en','hi','gu','mr'].includes(P.get('lang')) ? P.get('lang') : (store.get('diya_lang') || 'en'),
+  lit: false, sound: true, sent: +(store.get('diya_sent') || 0)
+};
+const REPLY_NAME = CONFIG.sender ? CONFIG.sender.split(' ')[0] : CONFIG.business;
+const t = (k, v = {}) => String(T[S.lang][k] ?? T.en[k] ?? '').replace(/\{(\w+)\}/g, (_, x) => v[x] ?? '');
+
+/* Tracking ids. The first link you send gets a fixed id from the names, so everyone
+   who opens that same link counts under it. Every "Pass the light" makes a child link. */
+const rid = () => Math.random().toString(36).slice(2, 8).toUpperCase();
+const slug = s => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 24) || 'x';
+const hash = s => { let h = 0; for (const ch of s) h = (h * 31 + ch.codePointAt(0)) >>> 0; return h.toString(36).slice(0, 4).toUpperCase(); };
+const ROOT_ID = 'R-' + (S.to ? slug(S.to) : 'all') + '-' + hash((S.to || '') + '|' + S.from);
+S.link = (P.get('g') || ROOT_ID).slice(0, 40);
+S.parent = (P.get('p') || '').slice(0, 40);
+S.root = (P.get('r') || S.link).slice(0, 40);
+S.depth = Math.min(+P.get('d') || 0, 999);
+S.visitor = store.get('diya_vid') || ('V-' + rid() + rid());
+store.set('diya_vid', S.visitor);
+
+/* =====================================================================
+   TEXT RENDER
+   ===================================================================== */
+function render(){
+  document.documentElement.lang = S.lang;
+  document.querySelectorAll('#langs button').forEach(b => b.classList.toggle('on', b.dataset.l === S.lang));
+  $('brand').textContent = CONFIG.business;
+  $('litfor').textContent = S.from ? t('litFor', { from: S.from }) : t('litAnon');
+  if (!S.lit) $('hint').textContent = t('hold');
+  $('gh').textContent = t('gh');
+  $('gname').textContent = S.to;
+  $('gmsg').textContent = t('msg');
+  $('gsign').textContent = t('sign', { from: S.from });
+  $('gorg').textContent = (!P.get('from') && CONFIG.sender) ? CONFIG.business : '';
+  $('wishTitle').textContent = t('wishTitle'); $('wishSub').textContent = t('wishSub');
+  $('wishIn').placeholder = t('wishPh'); $('wishBtn').textContent = t('wishBtn');
+  $('passTitle').textContent = t('passTitle'); $('passSub').textContent = t('passSub');
+  $('lblYou').textContent = t('you'); $('lblThem').textContent = t('them');
+  $('passBtnT').textContent = t('passBtn');
+  $('chainNote').textContent = S.sent ? t('chain', { n: S.sent }) : '';
+  $('bizLogo').textContent = CONFIG.initials;
+  $('bizName').textContent = CONFIG.business;
+  $('bizWho').textContent = CONFIG.sender || '';
+  const offer = CONFIG.offer[S.lang] || CONFIG.offer.en;
+  $('bizOffer').textContent = offer; $('bizOffer').style.display = offer ? '' : 'none';
+  $('bizBtn').textContent = t('bizBtn', { biz: REPLY_NAME });
+  $('aboutCard').style.display = CONFIG.showAbout ? '' : 'none';
+  $('abTitle').textContent = t('abTitle'); $('abSub').textContent = t('abSub');
+  $('abList').innerHTML = [['🎯','ab1'],['📋','ab2'],['📈','ab3']].map(([i,k]) => `<li><i>${i}</i><span></span></li>`).join('');
+  [...$('abList').querySelectorAll('li span')].forEach((el, i) => el.textContent = t('ab' + (i + 1)));
+  $('abUsesT').textContent = t('abUsesT');
+  $('abUses').innerHTML = ''; (T[S.lang].abUses || T.en.abUses).forEach(u => { const s = document.createElement('span'); s.textContent = u; $('abUses').appendChild(s); });
+  $('abBtn').textContent = t('abBtn'); $('abEx').textContent = t('abEx');
+  $('abEx').style.display = CONFIG.exampleUrl ? '' : 'none';
+  if (S.litCount != null) showCounter(S.litCount);
+  $('foot').innerHTML = CONFIG.footer;
+}
+document.querySelectorAll('#langs button').forEach(b => b.onclick = () => { S.lang = b.dataset.l; store.set('diya_lang', S.lang); render(); });
+// prefill: the person who received it becomes the sender
+$('youIn').value = store.get('diya_me') || S.to || '';
+
+/* =====================================================================
+   SOUND · a soft temple bell, made in the browser
+   ===================================================================== */
+let AC;
+function bell(freq = 660, vol = .18, dur = 2.4){
+  if (!S.sound) return;
+  try{
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    const now = AC.currentTime;
+    [1, 2.01, 2.76, 4.07].forEach((m, i) => {
+      const o = AC.createOscillator(), g = AC.createGain();
+      o.type = 'sine'; o.frequency.value = freq * m;
+      g.gain.setValueAtTime(0, now);
+      g.gain.linearRampToValueAtTime(vol / (i + 1), now + .01);
+      g.gain.exponentialRampToValueAtTime(.0001, now + dur / (i * .6 + 1));
+      o.connect(g).connect(AC.destination); o.start(now); o.stop(now + dur);
+    });
+  }catch(e){}
+}
+$('sound').onclick = () => { S.sound = !S.sound; $('sound').textContent = S.sound ? '🔔' : '🔕'; };
+
+/* =====================================================================
+   SKY · stars, rising embers, sparks, small fireworks
+   ===================================================================== */
+const cv = $('sky'), cx = cv.getContext('2d');
+let W, H, DPR = Math.min(devicePixelRatio || 1, 2);
+const stars = [], embers = [], sparks = [];
+function size(){ W = cv.width = innerWidth * DPR; H = cv.height = innerHeight * DPR; cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px'; }
+size(); addEventListener('resize', size);
+for (let i = 0; i < 90; i++) stars.push({ x: Math.random(), y: Math.random() * .7, r: Math.random() * 1.2 + .3, p: Math.random() * 6 });
+function ember(){ embers.push({ x: Math.random() * W, y: H + 10, vy: -(Math.random() * .6 + .3) * DPR, vx: (Math.random() - .5) * .3 * DPR, r: (Math.random() * 1.8 + .6) * DPR, life: 1 }); }
+function burst(x, y, n = 60, hues = ['#FFC857','#FF8A1F','#FFF4DC','#E8457A']){
+  for (let i = 0; i < n; i++){
+    const a = Math.random() * Math.PI * 2, s = (Math.random() * 3.2 + 1) * DPR;
+    sparks.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 1, c: hues[i % hues.length], r: (Math.random() * 1.6 + .8) * DPR });
+  }
+}
+let fwUntil = 0;
+function loop(ts){
+  cx.clearRect(0, 0, W, H);
+  stars.forEach(s => { cx.globalAlpha = .35 + .35 * Math.sin(ts / 900 + s.p); cx.fillStyle = '#FFF4DC'; cx.beginPath(); cx.arc(s.x * W, s.y * H, s.r * DPR, 0, 7); cx.fill(); });
+  if (Math.random() < (S.lit ? .25 : .08)) ember();
+  for (let i = embers.length - 1; i >= 0; i--){
+    const e = embers[i]; e.x += e.vx + Math.sin(ts / 700 + i) * .2; e.y += e.vy; e.life -= .0025;
+    if (e.life <= 0 || e.y < -10){ embers.splice(i, 1); continue; }
+    cx.globalAlpha = e.life * .8; cx.fillStyle = '#FFB13B'; cx.beginPath(); cx.arc(e.x, e.y, e.r, 0, 7); cx.fill();
+  }
+  if (ts < fwUntil && Math.random() < .03){
+    burst(Math.random() * W * .8 + W * .1, Math.random() * H * .3 + H * .05, 50,
+      [['#FFC857','#FFF4DC'], ['#E8457A','#FFC857'], ['#2EC4B6','#FFF4DC'], ['#FF8A1F','#E8457A']][Math.floor(Math.random() * 4)]);
+  }
+  for (let i = sparks.length - 1; i >= 0; i--){
+    const p = sparks[i]; p.x += p.vx; p.y += p.vy; p.vy += .04 * DPR; p.vx *= .985; p.vy *= .985; p.life -= .014;
+    if (p.life <= 0){ sparks.splice(i, 1); continue; }
+    cx.globalAlpha = p.life; cx.fillStyle = p.c; cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 7); cx.fill();
+  }
+  cx.globalAlpha = 1;
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* =====================================================================
+   HOLD TO LIGHT
+   ===================================================================== */
+const box = $('diyabox'), ring = $('ringfg');
+const HOLD_MS = 1300;
+let holdStart = 0, raf = 0;
+function startHold(e){
+  if (S.lit) return;
+  if (e) e.preventDefault();
+  holdStart = performance.now(); box.classList.add('holding');
+  $('hint').textContent = t('hold');
+  const tick = now => {
+    const p = Math.min((now - holdStart) / HOLD_MS, 1);
+    ring.style.strokeDashoffset = 1 - p;
+    if (p >= 1) return light();
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+}
+function endHold(){
+  if (S.lit || !holdStart) return;
+  cancelAnimationFrame(raf); box.classList.remove('holding');
+  if (performance.now() - holdStart < HOLD_MS) $('hint').textContent = t('holdMore');
+  holdStart = 0; ring.style.transition = 'stroke-dashoffset .4s'; ring.style.strokeDashoffset = 1;
+  setTimeout(() => ring.style.transition = '', 400);
+}
+box.addEventListener('pointerdown', startHold);
+['pointerup','pointerleave','pointercancel'].forEach(ev => box.addEventListener(ev, endHold));
+box.addEventListener('contextmenu', e => e.preventDefault());
+box.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) startHold(e); });
+box.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') endHold(); });
+
+function light(){
+  S.lit = true; holdStart = 0;
+  box.classList.remove('holding'); box.classList.add('lit');
+  ring.style.transition = 'opacity 1s'; ring.style.opacity = 0;
+  $('hint').style.opacity = 0;
+  if (navigator.vibrate) navigator.vibrate(40);
+  bell(523);
+  const r = box.getBoundingClientRect();
+  burst((r.left + r.width / 2) * DPR, (r.top + r.height * .32) * DPR, 90);
+  setTimeout(() => {
+    document.body.classList.add('show');
+    lightRow();
+    $('greetSec').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 1100);
+  fwUntil = performance.now() + 9000;
+  ping('lit');
+}
+
+/* row of small diyas that light one after another */
+const MINI = '<svg viewBox="0 0 30 34"><path d="M3 22 Q15 19 27 22 Q24 32 15 32 Q6 32 3 22Z" fill="#C2552A"/><ellipse cx="15" cy="22" rx="12" ry="2.2" fill="#FFC857"/><g class="mf"><path d="M15 4 C19 10 20 14 18 17 C17 19 16 19.5 15 19.5 C14 19.5 13 19 12 17 C10 14 11 10 15 4Z" fill="#FFB13B"/><path d="M15 10 C16.6 13 16.8 15 16 16.4 C15.6 17 15.2 17.2 15 17.2 C14.8 17.2 14.4 17 14 16.4 C13.2 15 13.4 13 15 10Z" fill="#FFF8D6"/></g></svg>';
+const N_MINI = 9;
+$('row').innerHTML = Array.from({ length: N_MINI }, () => `<div class="mini">${MINI}</div>`).join('');
+function lightRow(){
+  const minis = [...document.querySelectorAll('.mini')];
+  const mid = Math.floor(N_MINI / 2);
+  minis.forEach((m, i) => setTimeout(() => { m.classList.add('on'); if (i % 2 === 0) bell(784 + Math.abs(i - mid) * 40, .05, 1.2); }, 300 + Math.abs(i - mid) * 220));
+}
+
+/* =====================================================================
+   RANGOLI · drawn in code, so it's crisp at any size
+   ===================================================================== */
+(function rangoli(){
+  const svg = $('rangoli'); let out = '', delay = 0;
+  const layers = [
+    { n: 8,  r1: 58,  r2: 98,  w: 22, c: '#FF8A1F' },
+    { n: 8,  r1: 70,  r2: 112, w: 16, c: '#E8457A', rot: 22.5 },
+    { n: 16, r1: 112, r2: 142, w: 10, c: '#FFC857' },
+    { n: 16, r1: 126, r2: 160, w: 9,  c: '#2EC4B6', rot: 11.25 }
+  ];
+  out += `<circle class="s" r="54" stroke="#FFC857" pathLength="1" style="animation-delay:0s"/>`;
+  layers.forEach((L, li) => {
+    for (let i = 0; i < L.n; i++){
+      const a = 360 / L.n * i + (L.rot || 0), m = (L.r1 + L.r2) / 2;
+      out += `<path pathLength="1" stroke="${L.c}" transform="rotate(${a})" style="animation-delay:${(li * .45 + i * .03).toFixed(2)}s" d="M0,${-L.r1} Q${L.w},${-m} 0,${-L.r2} Q${-L.w},${-m} 0,${-L.r1}Z"/>`;
+    }
+    delay = li * .45 + 1.2;
+  });
+  for (let i = 0; i < 32; i++){
+    const a = (i / 32) * Math.PI * 2, R = 166;
+    out += `<circle class="dot" cx="${(Math.cos(a) * R).toFixed(1)}" cy="${(Math.sin(a) * R).toFixed(1)}" r="2.6" fill="${i % 2 ? '#FFC857' : '#FFF4DC'}" style="animation-delay:${(delay + i * .04).toFixed(2)}s"/>`;
+  }
+  svg.innerHTML = out;
+})();
+
+/* =====================================================================
+   WISH LANTERN
+   ===================================================================== */
+$('wishBtn').onclick = () => {
+  const wish = $('wishIn').value.trim();
+  const btnR = $('wishBtn').getBoundingClientRect();
+  const L = document.createElement('div');
+  L.className = 'lantern';
+  L.style.left = (btnR.left + btnR.width / 2 - 27) + 'px';
+  L.style.top = (btnR.top - 40) + 'px';
+  L.innerHTML = '<div class="body"></div>' + (wish ? `<div class="tag"></div>` : '');
+  if (wish) L.querySelector('.tag').textContent = wish;
+  document.body.appendChild(L);
+  setTimeout(() => L.remove(), 9500);
+  // a few companion lanterns far away
+  for (let i = 0; i < 4; i++){
+    const c = document.createElement('div'); c.className = 'lantern';
+    c.style.left = (Math.random() * 85) + 'vw'; c.style.top = (90 + Math.random() * 15) + 'vh';
+    c.style.transform = 'scale(.5)'; c.style.animationDelay = (i * .7) + 's'; c.style.opacity = 0;
+    c.innerHTML = '<div class="body" style="transform:scale(.55)"></div>';
+    document.body.appendChild(c); setTimeout(() => c.remove(), 12000);
+  }
+  bell(659, .1, 1.8);
+  $('wishIn').value = ''; $('wishOk').textContent = t('wishOk');
+  ping('wish');   // the wish text itself is never sent
+};
+
+/* =====================================================================
+   PASS THE LIGHT · the chain
+   ===================================================================== */
+$('passBtn').onclick = () => {
+  const me = clean($('youIn').value), them = clean($('themIn').value);
+  if (!me || !them){ $('passErr').textContent = t('needBoth'); return; }
+  $('passErr').textContent = '';
+  store.set('diya_me', me);
+  const child = 'L-' + rid();
+  const link = location.origin + location.pathname + '?' + new URLSearchParams({
+    to: them, from: me, lang: S.lang, src: 'chain', g: child, p: S.link, r: S.root, d: S.depth + 1 }).toString();
+  window.open('https://wa.me/?text=' + encodeURIComponent(t('share', { to: them, link })), '_blank');
+  S.sent++; store.set('diya_sent', S.sent);
+  $('passOk').textContent = t('passOk'); $('themIn').value = '';
+  render();
+  ping('pass', { sender: me, sent_to: them, child });
+};
+
+/* =====================================================================
+   WHAT IS CHAT LEAD · the Comedge Labs lead
+   ===================================================================== */
+$('abBtn').onclick = () => {
+  const name = clean($('youIn').value) || S.to || '';
+  window.open(`https://wa.me/${CONFIG.comedgeWhatsApp}?text=${encodeURIComponent(t('abMsg', { name, sender: REPLY_NAME }))}`, '_blank');
+  ping('cta', { sender: name });
+};
+$('abEx').onclick = () => window.open(CONFIG.exampleUrl, '_blank', 'noopener');
+
+/* =====================================================================
+   WISH THE BUSINESS BACK · the lead
+   ===================================================================== */
+$('bizBtn').onclick = () => {
+  const name = clean($('youIn').value) || S.to || '';
+  let msg = t('reply', { biz: REPLY_NAME, name });
+  if (CONFIG.replyText) msg += '\n' + CONFIG.replyText;
+  window.open(`https://wa.me/${CONFIG.ownerWhatsApp}?text=${encodeURIComponent(msg)}`, '_blank');
+  ping('reply', { sender: name });
+};
+
+/* =====================================================================
+   OPTIONAL · log events to a Google Sheet (same Apps Script pattern as Chat Lead)
+   ===================================================================== */
+function ping(event, extra = {}){
+  if (!CONFIG.scriptUrl) return;
+  try{
+    fetch(CONFIG.scriptUrl, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({ key: CONFIG.sharedKey, event, link: S.link, parent: S.parent, root: S.root, depth: S.depth,
+        to: S.to, from: S.from, visitor: S.visitor, source: S.src, language: S.lang }, extra)) });
+  }catch(e){}
+}
+
+/* live counter: "1,248 diyas lit this Diwali" */
+function showCounter(n){
+  if (!CONFIG.showCounter || n < CONFIG.showCounter) return;
+  $('counter').textContent = t('counter', { n: n.toLocaleString('en-IN') });
+  $('counter').style.display = 'inline-block';
+}
+function loadCounter(){
+  if (!CONFIG.scriptUrl || !CONFIG.showCounter) return;
+  fetch(CONFIG.scriptUrl + '?stats=1').then(r => r.json()).then(d => { S.litCount = +d.lit || 0; showCounter(S.litCount); }).catch(() => {});
+}
+
+render();
+loadCounter();
+// count each phone once per link
+if (!store.get('diya_open_' + S.link)){ store.set('diya_open_' + S.link, '1'); ping('open'); }
+</script>
+</body>
+</html>
